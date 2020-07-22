@@ -9,7 +9,7 @@ checker=True
 video=cv2.VideoCapture(0)
 print('no motion detected duration starts at: ',datetime.datetime.now())
 endTime = datetime.datetime.now() + datetime.timedelta(minutes=1)
-print(endTime)
+print('starting endtime: ',endTime)
 while checker:
     check, frame = video.read()
     gray_frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
@@ -25,7 +25,7 @@ while checker:
     font = cv2.FONT_HERSHEY_SIMPLEX
     if not contours:
         cv2.putText(frame,'no motion detected!',(0,50), font, 1, (200,255,155), 2, cv2.LINE_AA)
-    elif datetime.datetime.now() >= endTime:
+        if datetime.datetime.now() >= endTime:
             print('No motion detected for last one minute: ',datetime.datetime.now())
             print('[info]:storing in database')
             checker=False
@@ -41,6 +41,8 @@ while checker:
                 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
                 faces = faceCascade.detectMultiScale(gray_frame,scaleFactor=1.3, minNeighbors=3,minSize=(20, 20))
                 print("[INFO] Found {0} Faces!".format(len(faces)))
+                endTime = datetime.datetime.now() + datetime.timedelta(minutes=1)
+                print("new endtime:",endTime)
                 for (x, y, w, h) in faces:
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
     cv2.imshow("gray_frame Frame",gray_frame)
