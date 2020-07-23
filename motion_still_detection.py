@@ -8,19 +8,22 @@ baseline_image=None
 checker=True
 video=cv2.VideoCapture(0)
 print('no motion detected duration starts at: ',datetime.datetime.now())
-endTime = datetime.datetime.now() + datetime.timedelta(minutes=1)
+endTime = datetime.datetime.now() + datetime.timedelta(minutes=2)
+baseimage_change= datetime.datetime.now() + datetime.timedelta(minutes=.5)
 print('starting endtime: ',endTime)
 while checker:
     check, frame = video.read()
     gray_frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     gray_frame=cv2.GaussianBlur(gray_frame,(25,25),0)
 
-    if baseline_image is None:
+    if baseline_image is None or datetime.datetime.now() >=baseimage_change :
         baseline_image=gray_frame
+        baseimage_change= datetime.datetime.now() + datetime.timedelta(minutes=.5)
+        print('baseline_frame_changed')
         continue
 
     delta=cv2.absdiff(baseline_image,gray_frame)
-    threshold=cv2.threshold(delta, 30, 255, cv2.THRESH_BINARY)[1]
+    threshold=cv2.threshold(delta, 50, 255, cv2.THRESH_BINARY)[1]
     (contours,_)=cv2.findContours(threshold,cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     font = cv2.FONT_HERSHEY_SIMPLEX
     if not contours:
